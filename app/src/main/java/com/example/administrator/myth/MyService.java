@@ -3,27 +3,53 @@ package com.example.administrator.myth;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 
 public class MyService extends Service {
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MyBinder();
+    }
+
+    WindowManager wm;
+    WindowManager.LayoutParams lp;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+
+        Log.d("myth", "onStart: ");
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onCreate() {
+
+        super.onCreate();
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public void show() {
         MyFloatView myFloatView;
-        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams lp = ((MyApplication) getApplicationContext()).getMywmParams();
+        wm= (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
+        lp = ((MyApplication) getApplicationContext()).getMywmParams();
         myFloatView = new MyFloatView(getApplicationContext());
         lp.type = WindowManager.LayoutParams.TYPE_PHONE;
         lp.format= PixelFormat.RGBA_8888;
@@ -36,6 +62,12 @@ public class MyService extends Service {
         lp.verticalMargin = 0.3f;
 
         wm.addView(myFloatView, lp);
-        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public  class MyBinder extends Binder {
+        public MyService getService(){
+            return MyService.this;
+        }
+
     }
 }
