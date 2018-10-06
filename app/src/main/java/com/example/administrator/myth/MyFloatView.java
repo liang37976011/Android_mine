@@ -3,9 +3,11 @@ package com.example.administrator.myth;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -30,20 +32,15 @@ public class MyFloatView extends ImageView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        x = event.getRawX();
-        y = event.getRawY() - 25;   //25是系统状态栏的高度
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:    //捕获手指触摸按下动作
-                Log.d("myth", "onTouchEvent : event.getRawX():" + event.getRawX()+" event.getRawY():"+event.getRawY()+" event.getX(): "+event.getX()+" event.getY():"+event.getY());
-                mTouchStartX = event.getX();
-                mTouchStartY = event.getY();
+                Log.d("myth", "onTouchEvent: MotionEvent.ACTION_DOWN");
                 break;
             case MotionEvent.ACTION_MOVE:   //捕获手指触摸移动动作
-                updateViewPosition();
+                Log.d("myth", "onTouchEvent: MotionEvent.ACTION_MOVE");
                 break;
             case MotionEvent.ACTION_UP:    //捕获手指触摸离开动作
-                updateViewPosition();
-                mTouchStartX = mTouchStartY = 0;
+                Log.d("myth", "onTouchEvent: MotionEvent.ACTION_UP");
                 break;
         }
         return true;
@@ -54,4 +51,11 @@ public class MyFloatView extends ImageView {
         wmParams.y = (int) (y - mTouchStartY);
         wm.updateViewLayout(this, wmParams);  //刷新显示
     }
+
+    private void updateViewPosition(float x, float y) {
+        wmParams.x = (int) x;
+        wmParams.y = (int) y;
+        wm.updateViewLayout(this, wmParams);  //刷新显示
+    }
+
 }

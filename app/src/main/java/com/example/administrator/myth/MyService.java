@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
 
 public class MyService extends Service {
@@ -18,11 +19,25 @@ public class MyService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        wm= (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
+        lp = ((MyApplication) getApplicationContext()).getMywmParams();
+        myFloatView = new MyFloatView(getApplicationContext());
+        lp.type = WindowManager.LayoutParams.TYPE_PHONE;
+        lp.format= PixelFormat.RGBA_8888;
+        lp.gravity= Gravity.RIGHT| Gravity.TOP;
+        lp.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        // lp.gravity = Gravity.LEFT|Gravity.TOP;
+        lp.height = 200;
+        lp.width = 200;
+        lp.horizontalMargin = 0f;
+        lp.verticalMargin = 0.3f;
         return new MyBinder();
     }
 
     WindowManager wm;
     WindowManager.LayoutParams lp;
+    MyFloatView myFloatView;
+    boolean isAddFlag=false;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -33,35 +48,30 @@ public class MyService extends Service {
     @Override
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
-
         Log.d("myth", "onStart: ");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onCreate() {
-
         super.onCreate();
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void show() {
-        MyFloatView myFloatView;
-        wm= (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
-        lp = ((MyApplication) getApplicationContext()).getMywmParams();
-        myFloatView = new MyFloatView(getApplicationContext());
-        lp.type = WindowManager.LayoutParams.TYPE_PHONE;
-        lp.format= PixelFormat.RGBA_8888;
-        lp.gravity=Gravity.LEFT| Gravity.TOP;
-        lp.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        // lp.gravity = Gravity.LEFT|Gravity.TOP;
-        lp.height = 200;
-        lp.width = 200;
-        lp.horizontalMargin = 0.3f;
-        lp.verticalMargin = 0.3f;
+        if (!isAddFlag)
+        {
+            wm.addView(myFloatView, lp);
+            isAddFlag=true;
+        }else {
+            myFloatView.setVisibility(View.VISIBLE);
+        }
+    }
 
-        wm.addView(myFloatView, lp);
+    public void hide() {
+//        if (isAddFlag)
+        wm.removeView(myFloatView);
+        isAddFlag=false;
     }
 
     public  class MyBinder extends Binder {

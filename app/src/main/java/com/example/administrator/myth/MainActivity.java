@@ -1,35 +1,33 @@
 package com.example.administrator.myth;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-    private Button button;
+    private Button btn_show;
+    private Button btn_hide;
     private MyService myService;
     MyServiceConnection myServiceConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button=findViewById(R.id.btn_show);
+        btn_show = findViewById(R.id.btn_show);
+        btn_hide = findViewById(R.id.btn_hide);
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Settings.canDrawOverlays(MainActivity.this)) {
@@ -38,14 +36,22 @@ public class MainActivity extends Activity {
             }
         }
 
-        myServiceConnection=new MyServiceConnection();
-        bindService(new Intent(MainActivity.this,MyService.class),myServiceConnection,BIND_AUTO_CREATE);
-        button.setOnClickListener(new View.OnClickListener() {
+        myServiceConnection = new MyServiceConnection();
+        bindService(new Intent(MainActivity.this, MyService.class), myServiceConnection, BIND_AUTO_CREATE);
+        btn_show.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
 //                startService(new Intent(MainActivity.this,MyService.class));
-                if(myService!=null)
+                if (myService != null)
                     myService.show();
+            }
+        });
+        btn_hide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myService != null)
+                    myService.hide();
             }
         });
 //        startService(new Intent(this,MyService.class));
@@ -67,7 +73,7 @@ public class MainActivity extends Activity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d("myth", "onServiceConnected: ");
-            myService=((MyService.MyBinder)service).getService();
+            myService = ((MyService.MyBinder) service).getService();
         }
 
         @Override
@@ -75,4 +81,4 @@ public class MainActivity extends Activity {
             Log.d("myth", "onServiceDisconnected: ");
         }
     }
- }
+}
